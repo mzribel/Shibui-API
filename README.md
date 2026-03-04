@@ -2,6 +2,10 @@
 
 Fork du projet d'architecture logicielle, les services et modèles de données ne sont qu'indicatifs.
 
+## API
+
+La documentation Swagger est générée par des décorateurs dans le code et est accessible à `/api/docs`.
+
 ## Prisma 
 
 Le fichier `schema.prisma` fait figure de vérité pour la base de données.
