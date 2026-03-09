@@ -65,7 +65,7 @@ export class PrismaOfferRepository {
     const offersData = await this.ctx.db.offer.findMany({
       where: {
         company: {
-          isVerified: true // On s'assure que l'entreprise est vérifiée (selon ton schéma)
+          isVerified: true
         }
       }
     });

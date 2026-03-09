@@ -1,4 +1,3 @@
-// src/infrastructure/prisma/prisma-transaction-runner.ts
 import { Injectable } from "@nestjs/common";
 import { PrismaDbContext } from "./prisma-db-context";
 

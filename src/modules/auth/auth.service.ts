@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   async resetPassword(otp:string, dto:RegisterDto) {
-    
+    return this.credentialAuth.resetPassword(otp, dto);
   }
 
   async refreshToken(token: string) {

@@ -76,7 +76,7 @@ model Offer {
   location     String
   salary       Int?
   status       OfferStatus  @default(DRAFT)
-  fieldOfStudy FieldOfStudy // <--- Ajouté selon la règle métier du Rendu 3
+  fieldOfStudy FieldOfStudy
 
   // Relations
   companyId Int

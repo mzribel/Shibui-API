@@ -2,12 +2,13 @@ import { ICredentialAuthProvider } from '@infrastructure/auth/i.credential.auth.
 import { Session } from '@modules/auth/dto/session';
 import {
   BadRequestException,
-  ConflictException,
+  ConflictException, ForbiddenException,
   HttpException,
   Injectable,
 } from '@nestjs/common';
 import { RegisterDto } from '@/modules/account/dto/register.dto';
 import { SupabaseService } from '@infrastructure/supabase/supabase.service';
+import * as process from 'node:process';
 
 @Injectable()
 export class SupabaseAuth implements ICredentialAuthProvider {
@@ -63,19 +64,16 @@ export class SupabaseAuth implements ICredentialAuthProvider {
     return this.parseSessionData(data.session);
   }
 
-  async deleteUser(authId: string) {
-    const { data, error } =
-      await this.supabase.adminClient.auth.admin.deleteUser(authId);
+  async deleteUser(authId: string):Promise<void> {
+    const { data, error } = await this.supabase.adminClient.auth.admin.deleteUser(authId);
 
     if (error) this.processError(error);
-    return data;
   }
 
-  // TODO :
   async requestPasswordReset(email: string) {
     const { data, error } =
       await this.supabase.client.auth.resetPasswordForEmail(email, {
-        // URL factice nécessaire, mais non utilisée dans le flux OTP API
+        // URL non-utilisée mais nécessaire dans les paramètres
         redirectTo: 'http://localhost:3000/callback',
       });
 
@@ -84,19 +82,16 @@ export class SupabaseAuth implements ICredentialAuthProvider {
     return { message: 'Code de réinitialisation envoyé par email' };
   }
 
-  // TODO :
   async resetPassword(otp: string, dto: RegisterDto) {
-    // 1. Vérifier le code OTP reçu par email
-    const { data, error: verifyError } =
+    const { data, error } =
       await this.supabase.client.auth.verifyOtp({
         email: dto.email,
         token: otp,
-        type: 'recovery', // Indique qu'on vérifie un code de reset
+        type: 'recovery', // Code de réinitialisation
       });
 
-    if (verifyError) throw new Error(verifyError.message);
+    if (error)  this.processError(error);
 
-    // 2. Mettre à jour le mot de passe
     const { error: updateError } = await this.supabase.client.auth.updateUser({
       password: dto.password,
     });
@@ -120,6 +115,8 @@ export class SupabaseAuth implements ICredentialAuthProvider {
         throw new BadRequestException(error.message);
       case 'validation_failed':
         throw new BadRequestException(error.message);
+      case 'otp_expired':
+        throw new ForbiddenException(error.message);
       default:
         throw new HttpException('Authentication error : ' + error.message, 500);
     }

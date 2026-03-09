@@ -57,7 +57,7 @@ export class TestController {
     return {
       message: "Upload réussi",
       filename: file.originalname,
-      storageKey: result.key, // C'est ce chemin qu'il faut stocker dans ta table User/CV
+      storageKey: result.key,
       url: result.url
     };
   }

@@ -10,7 +10,7 @@ export class Offer {
     public companyId: number,
     public location: string,
     public salary: number | null,
-    public status: OfferStatus, // DRAFT, PUBLISHED, CLOSED
+    public status: OfferStatus,
     public fieldOfStudy: FieldOfStudy,
     public createdAt: Date,
     public updatedAt: Date,
@@ -55,7 +55,7 @@ export class Offer {
       companyId,
       dto.location,
       dto.salary ?? null,
-      OfferStatus.DRAFT, // Statut par défaut
+      OfferStatus.DRAFT,
       dto.fieldOfStudy,
       new Date(),
       new Date()
