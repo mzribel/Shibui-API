@@ -12,6 +12,7 @@ import { CompanyModule } from '@modules/companies/company.module';
 import { OfferModule } from '@modules/offers/offer.module';
 import { StudentModule } from '@modules/students/student.module';
 import { TestModule } from '@modules/route-test/test.module';
+import { StorageModule } from '@infrastructure/storage/storage.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { TestModule } from '@modules/route-test/test.module';
     OfferModule,
     StudentModule,
     UserModule,
-    TestModule
+    TestModule,
+    StorageModule
   ],
   providers: [
     { provide: APP_GUARD, useClass: SupabaseAuthGuard },
