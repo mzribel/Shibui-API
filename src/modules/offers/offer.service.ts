@@ -107,7 +107,6 @@ export class OfferService {
     const company:CompanyProfile = await this.companyProfileService.getCompanyProfile(offer.companyId);
     if (!company || !company.isVerified) throw new NotFoundException();
 
-    console.log(offer)
     if (!offer.isApplicable())
       throw new BadRequestException("This offer cannot be applied to.");
 

@@ -24,7 +24,6 @@ export class OfferController {
   @Public()
   @Get("/companies/:id/offers")
   getOffersByCompanyId(@Param("id") companyId:number, @CurrentUser() requestingUser:User){
-    console.log(requestingUser)
     return this.offerService.getVisibleOffersByCompanyId(companyId, requestingUser);
   }
 

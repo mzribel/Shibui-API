@@ -29,4 +29,9 @@ export class AuthController {
     }
     return this.authService.resetPassword(otp, dto);
   }
+
+  @Post("refresh")
+  refresh(@Body() dto: { refreshToken: string }) {
+    return this.authService.refreshToken(dto.refreshToken);
+  }
 }

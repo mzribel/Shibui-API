@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { SupabaseService } from '../../supabase/supabase.service'; // Ajuste le chemin selon ton arborescence
+import { SupabaseService } from '@infrastructure/supabase/supabase.service';
 
 @Injectable()
 export class SupabaseStorageService  {
@@ -30,7 +30,6 @@ export class SupabaseStorageService  {
   }
 
   async upload(file: Express.Multer.File, path: string, options?: { container?: string }): Promise<{ url: string; key: string }> {
-    console.log(options)
     if (!options?.container) throw new InternalServerErrorException("Supabase bucket is missing 1");
 
     const { data, error } = await this.supabase.adminClient.storage

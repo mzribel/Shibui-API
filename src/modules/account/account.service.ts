@@ -41,7 +41,7 @@ export class AccountService {
     try {
       return await this.tx.run(async () => {
         await this.companyProfileService.createCompanyProfile(user.id, dto.profile);
-        return user;
+        return auth;
       });
     } catch (e) {
       await this.authService.deleteUser(auth.externalUserId);
@@ -55,7 +55,7 @@ export class AccountService {
     try {
       return await this.tx.run(async () => {
         await this.studentProfileService.createStudentProfile(user.id, dto.profile);
-        return user;
+        return auth;
       });
     } catch (e) {
       await this.authService.deleteUser(auth.externalUserId);
