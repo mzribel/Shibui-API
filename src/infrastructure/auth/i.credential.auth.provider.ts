@@ -7,6 +7,6 @@ export abstract class ICredentialAuthProvider {
   abstract deleteUser(authId:string);
   abstract requestPasswordReset(email:string);
   abstract resetPassword(otp:string, dto:RegisterDto);
-  abstract logout(): Promise<void>;
+  abstract logout(input:{token:string}): Promise<void>;
   abstract refreshToken(input: { refreshToken:string}):Promise<Session>;
 }

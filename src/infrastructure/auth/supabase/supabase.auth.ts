@@ -13,8 +13,10 @@ import { SupabaseService } from '@infrastructure/supabase/supabase.service';
 export class SupabaseAuth implements ICredentialAuthProvider {
   constructor(private readonly supabase: SupabaseService) {}
 
-  logout(): Promise<void> {
-    throw new Error('Method not implemented.');
+  // Attention : Ca n'invalide pas un access_token en cours,
+  // ça ne fait que bloquer le refresh token
+  async logout(input:{token:string}): Promise<void> {
+    await this.supabase.client.auth.admin.signOut(input.token);
   }
 
   async refreshToken(input: { refreshToken: string }):Promise<Session> {

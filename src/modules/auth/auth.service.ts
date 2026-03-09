@@ -31,4 +31,8 @@ export class AuthService {
   async refreshToken(token: string) {
     return await this.credentialAuth.refreshToken({refreshToken:token});
   }
+
+  async logout(token:string) {
+    return await this.credentialAuth.logout({token});
+  }
 }
