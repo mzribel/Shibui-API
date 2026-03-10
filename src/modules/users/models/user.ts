@@ -3,7 +3,7 @@ import { Role } from '@common/enums/role.enum';
 export class User {
     constructor(
         public readonly id:number,
-        public readonly supabaseUserId:string,
+        public readonly externalUserId:string,
         public readonly email:string,
         public readonly role:Role,
         public readonly isActive:boolean,
@@ -25,10 +25,10 @@ export class User {
       return this.id == userId || this.role == Role.ADMIN;
     }
 
-    static fromAuth(supabaseUserId:string, email:string, role:Role):User {
+    static fromAuth(externalUserId:string, email:string, role:Role):User {
         return new User(
           0,                // Temporaire
-          supabaseUserId,
+          externalUserId,
           email,
           role,
           true,
@@ -40,7 +40,7 @@ export class User {
     static fromObject(data:any): User {
       return new User(
         data.id,
-        data.supabaseUserId,
+        data.externalUserId,
         data.email,
         data.role as Role,
         data.isActive,

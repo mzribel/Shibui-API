@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaStudentProfileRepository } from '@modules/students/repositories/prisma.student-profile.repository';
-import { CreateStudentProfileDto, UpdateStudentProfileDto } from '@modules/students/dto/student-profile.dto';
+import { StudentProfileDto } from '@modules/students/dto/student-profile.dto';
 import { StudentProfile } from '@modules/students/models/student-profile';
 import { User } from '@modules/users/models/user';
 
@@ -22,7 +22,7 @@ export class StudentProfileService {
     return profile;
   };
 
-  async createStudentProfile(userId:number, dto:CreateStudentProfileDto) {
+  async createStudentProfile(userId:number, dto:StudentProfileDto) {
     const existing = await this.profileRepository.findByUserId(userId);
     if (existing){ throw new ConflictException() }
 
@@ -30,7 +30,7 @@ export class StudentProfileService {
     return await this.profileRepository.createProfile(profile);
   }
 
-  async updateStudentProfile(userId:number, dto:UpdateStudentProfileDto, requestingUser:User) {
+  async updateStudentProfile(userId:number, dto:StudentProfileDto, requestingUser:User) {
     if (!requestingUser.isSelfOrAdmin(userId)) throw new ForbiddenException();
 
     const existing = this.profileRepository.findByUserId(userId);

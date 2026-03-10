@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @db.Uuid
+  email             String   @unique
+  role              UserRole
+  firstName         String?  @map("first_name")
+  lastName          String?  @map("last_name")
+  avatarUrl         String?  @map("avatar_url")
+  isProfileComplete Boolean  @default(false) @map("is_profile_complete")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  studentProfile StudentProfile?
+  companyProfile CompanyProfile?
+
+  conversations1 Conversation[] @relation("participant1")
+  conversations2 Conversation[] @relation("participant2")
+  messages       Message[]
+
+  @@map("users")
+}
+
+model StudentProfile {
+  id UUID @id @default(uuid())
+  userId String @unique @db.Uuid @map("user_id")
+
+  bio          String?
+  phone        String?
+  dateOfBirth  DateTime? @map("date_of_birth")
+  city         String?
+  country      String? @default("France")
+
+  schoolName     String? @map("school_name")
+  degree         String?
+  fieldOfStudy   String? @map("field_of_study")
+  graduationYear Int?    @map("graduation_year")
+
+  skills    String[]
+  languages String[]
+
+  cvUrl      String? @map("cv_url")
+  cvFilename String? @map("cv_filename")
+
+  portfolioUrl String? @map("portfolio_url")
+  linkedinUrl  String? @map("linkedin_url")
+  githubUrl    String? @map("github_url")
+
+  lookingForInternship    Boolean @default(true) @map("looking_for_internship")
+  lookingForApprenticeship Boolean @default(true) @map("looking_for_apprenticeship")
+
+  preferredLocations String[] @map("preferred_locations")
+  availabilityDate   DateTime? @map("availability_date")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications Application[]
+  savedJobs    SavedJob[]
+
+  @@map("profiles_student")
+}
+
+model CompanyProfile {
+  id UUID @id @default(uuid())
+  userId String @unique @db.Uuid @map("user_id")
+
+  name        String
+  description String?
+  slogan      String?
+
+  sector        CompanySector?
+  size          CompanySize?
+  employeeCount Int? @map("employee_count")
+  foundedYear   Int? @map("founded_year")
+
+  logoUrl       String? @map("logo_url")
+  coverImageUrl String? @map("cover_image_url")
+  primaryColor  String? @default("#EE7527") @map("primary_color")
+
+  values   String[]
+  benefits String[]
+  history  String?
+
+  address    String?
+  city       String?
+  postalCode String? @map("postal_code")
+  country    String? @default("France")
+
+  websiteUrl   String? @map("website_url")
+  linkedinUrl  String? @map("linkedin_url")
+  contactEmail String? @map("contact_email")
+  contactPhone String? @map("contact_phone")
+
+  isVerified Boolean @default(false) @map("is_verified")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs  JobOffer[]
+
+  @@map("profiles_company")
+}
+
+model JobOffer {
+  id UUID @id @default(uuid())
+
+  companyId String @db.Uuid @map("company_id")
+
+  title            String
+  description      String
+  shortDescription String? @map("short_description")
+
+  contractType   ContractType @map("contract_type")
+  durationMonths Int?         @map("duration_months")
+  experienceLevel ExperienceLevel @default(debutant) @map("experience_level")
+
+  requirements   String[]
+  skillsRequired String[] @map("skills_required")
+  niceToHave     String[] @map("nice_to_have")
+
+  location     String
+  city         String?
+  isRemote     Boolean @default(false) @map("is_remote")
+  remotePolicy String? @map("remote_policy")
+
+  salaryMin    Int? @map("salary_min")
+  salaryMax    Int? @map("salary_max")
+  salaryPeriod String? @default("month") @map("salary_period")
+
+  startDate           DateTime? @map("start_date")
+  applicationDeadline DateTime? @map("application_deadline")
+
+  status     JobStatus @default(draft)
+  isFeatured Boolean   @default(false) @map("is_featured")
+  viewsCount Int       @default(0) @map("views_count")
+
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  publishedAt DateTime? @map("published_at")
+
+  company      CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  @@map("job_offers")
+}
+
+model Application {
+  id UUID @id @default(uuid())
+
+  studentId String @db.Uuid @map("student_id")
+  jobId     String @db.Uuid @map("job_id")
+
+  coverLetter String? @map("cover_letter")
+  customCvUrl String? @map("custom_cv_url")
+
+  status ApplicationStatus @default(pending)
+
+  companyNotes String? @map("company_notes")
+  rating       Int?
+
+  viewedAt    DateTime? @map("viewed_at")
+  respondedAt DateTime? @map("responded_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job     JobOffer       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, jobId])
+  @@map("applications")
+}
+
+model SavedJob {
+  id UUID @id @default(uuid())
+
+  studentId String @db.Uuid @map("student_id")
+  jobId     String @db.Uuid @map("job_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job     JobOffer       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, jobId])
+  @@map("saved_jobs")
+}
+
+model Conversation {
+  id UUID @id @default(uuid())
+
+  applicationId String? @db.Uuid @map("application_id")
+  participant1  String  @db.Uuid @map("participant_1")
+  participant2  String  @db.Uuid @map("participant_2")
+
+  lastMessageAt DateTime? @map("last_message_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("conversations")
+}
+
+model Message {
+  id UUID @id @default(uuid())
+
+  conversationId String @db.Uuid @map("conversation_id")
+  senderId       String @db.Uuid @map("sender_id")
+
+  content  String
+  isRead   Boolean @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("messages")
+}
+
+enum UserRole {
+  student
+  company
+  pending
+}
+
+enum CompanySize {
+  TPE   // 0-10
+  PME   // 10-250
+  ETI   // 250-5000
+  GE    // +5000
+}
+
+enum CompanySector {
+  tech
+  finance
+  sante
+  industrie
+  commerce
+  marketing
+  conseil
+  education
+  autre
+}
+
+enum ContractType {
+  stage
+  alternance
+  cdi
+  cdd
+}
+
+enum JobStatus {
+  draft
+  published
+  closed
+  archived
+}
+
+enum ExperienceLevel {
+  debutant
+  junior
+  intermediaire
+  senior
+}
+
+enum ApplicationStatus {
+  pending
+  viewed
+  shortlisted
+  interview
+  accepted
+  rejected
+  withdrawn
+}

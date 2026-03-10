@@ -52,7 +52,7 @@ export class SupabaseAuthGuard implements CanActivate {
     let user:User|null = null;
 
     if (supabaseUser) {
-      user = await this.userService.getBySupabaseUserId(supabaseUser.id);
+      user = await this.userService.getByexternalUserId(supabaseUser.id);
       if (!user && !isPublic) {
         throw new UnauthorizedException("User not found in application DB");
       }

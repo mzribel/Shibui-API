@@ -97,7 +97,7 @@ export class AccountService {
 
     return await this.tx.run(async () => {
       await this.userService.deleteUser(userId);
-      await this.authService.deleteUser(user.supabaseUserId)
+      await this.authService.deleteUser(user.externalUserId)
     });
   }
 }

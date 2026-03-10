@@ -10,10 +10,10 @@ datasource db {
 
 model User {
   id             Int       @id @default(autoincrement())
-  supabaseUserId String    @unique @db.Uuid
+  externalUserId String    @unique @db.Uuid
   email          String    @unique
-  role           Role      @default(STUDENT)
-  isActive       Boolean   @default(true)
+  role           Role      
+  avatarUrl      String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt
 
@@ -24,29 +24,68 @@ model User {
 }
 
 model StudentProfile {
+  // id                 Int           @id @default(autoincrement())
   userId             Int           @id @unique
-  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Informations personnelles
   firstName          String
   lastName           String
-  school             String?
-  degreeName         String?
-  startYear          Int?
-  endYear            Int?
-  currentLevel       StudyLevel?
-  targetLevel        StudyLevel?
-  pastDegrees        String[]
-  skills             String[]
-  fieldOfStudy       FieldOfStudy?
-  cvUrl              String?
-  isVisible          Boolean       @default(false)
-  showLastName       Boolean       @default(false)
-  contactPhoneNumber String?
+  biography          String?
+  dateOfBirth        DateTime?
+  city               String?
+  country            String? @default("France")
+
+  // Contact
+  contactPhone       String?
   contactEmail       String?
 
+  // Situation scolaire actuelle
+  schoolName         String?
+  degreeName         String?
+  fieldOfStudy       FieldOfStudy?
+  startYear          Int?
+  graduationYear     Int?
+  currentLevel       StudyLevel?
+  targetLevel        StudyLevel?
+
+  // Compétences
+  skills             String[]
+  languages          String[]
+
+  // CV et réseaux sociaux
+  cvUrl              String?
+  portfolioUrl String? @map("portfolio_url")
+  linkedinUrl  String? @map("linkedin_url")
+  githubUrl    String? @map("github_url")
+
+  // Recherche d'emploi
+  openTo             ContractType[]
+  preferredLocations String[]
+  availableOn        DateTime?
+
+  // Préférences
+  isVisible          Boolean       @default(false)
+  showLastName       Boolean       @default(false)
+
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   applications OfferApplication[]
+  savedOffers StudentSavedOffer[]
 
   @@map("student_profiles")
 }
+
+model StudentSavedOffer {
+  studentId Int
+  offerId Int
+  createdAt DateTime @default(now())
+
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  offer   Offer   @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, offerId])
+  @@index([offerId])
+}
+
 
 model CompanyProfile {
   userId             Int       @id @unique
@@ -85,7 +124,7 @@ model Offer {
   updatedAt DateTime       @updatedAt
 
   applications OfferApplication[]
-
+  savedBy       StudentSavedOffer[]
   @@map("offers")
 }
 
@@ -161,4 +200,9 @@ enum StudyLevel {
   BAC_PLUS_5 // Master 2, Diplôme d'Ingénieur, École de Commerce
   BAC_PLUS_6 // Master Spécialisé
   DOCTORATE // Doctorat
+}
+
+enum ContractType {
+  INTERNSHIP     // Stage
+  APPRENTICESHIP  // Alternance
 }

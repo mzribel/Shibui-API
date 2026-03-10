@@ -10,14 +10,14 @@ export class UserService {
         private readonly userRepository: PrismaUserRepository
     ){}
 
-    async createUser(supabaseUserId:string, email:string, role:Role): Promise<UserResponseDto> {
-        const userInput = User.fromAuth(supabaseUserId, email, role);
+    async createUser(externalUserId:string, email:string, role:Role): Promise<UserResponseDto> {
+        const userInput = User.fromAuth(externalUserId, email, role);
         const userModel = await this.userRepository.create(userInput);
         return new UserResponseDto(userModel);
     }
 
-    async getBySupabaseUserId(supabaseUserId:string): Promise<User|null> {
-      return this.userRepository.findBySupabaseId(supabaseUserId)
+    async getByexternalUserId(externalUserId:string): Promise<User|null> {
+      return this.userRepository.findBySupabaseId(externalUserId)
     }
 
     async getByUserId(userId:number):Promise<User|null> {

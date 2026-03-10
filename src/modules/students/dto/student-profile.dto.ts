@@ -1,148 +1,146 @@
-import { IsString, IsEnum, IsOptional, Length, IsNumber, IsBoolean, IsArray, IsUrl, IsEmail, Matches } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsOptional,
+  Length,
+  IsNumber,
+  IsArray,
+  IsUrl,
+  IsEmail,
+  Matches,
+  IsDateString,
+  IsBoolean
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StudyLevel } from '@common/enums/study-level.enum';
 import { FieldOfStudy } from '@common/enums/field-of-study.enum';
+import { ContractType } from '@common/enums/contract-type.enum';
 
-export class CreateStudentProfileDto {
-  @ApiProperty({ example: 'Jean', description: 'Student first name' })
+export class StudentProfileDto {
+
+  @ApiProperty({ example: 'Jean' })
   @Length(1, 50)
   @Matches(/^\p{L}+(?:[ '\-]\p{L}+)*$/u)
   firstName: string;
 
-  @ApiProperty({ example: 'Dupont', description: 'Student last name' })
+  @ApiProperty({ example: 'Dupont' })
   @Length(1, 50)
   @Matches(/^\p{L}+(?:[ '\-]\p{L}+)*$/u)
   lastName: string;
 
-  @ApiPropertyOptional({ example: 'Sorbonne University', description: 'Name of the school' })
-  @IsOptional()
-  school?: string | null;
-
-  @ApiPropertyOptional({ example: 'Computer Science', description: 'Name of the degree' })
-  @IsOptional()
-  degreeName?: string | null;
-
-  @ApiPropertyOptional({ example: 2022, description: 'Start year of studies' })
-  @IsOptional()
-  @IsNumber()
-  startYear?: number | null;
-
-  @ApiPropertyOptional({ example: 2025, description: 'Expected end year' })
-  @IsOptional()
-  @IsNumber()
-  endYear?: number | null;
-
-  @ApiPropertyOptional({ example: StudyLevel.BAC_PLUS_5, enum: StudyLevel, description: 'Current study level' })
-  @IsOptional()
-  @IsEnum(StudyLevel)
-  currentLevel?: StudyLevel | null;
-
-  @ApiPropertyOptional({ example: StudyLevel.DOCTORATE, enum: StudyLevel, description: 'Target study level' })
-  @IsOptional()
-  @IsEnum(StudyLevel)
-  targetLevel?: StudyLevel | null;
-
-  @ApiPropertyOptional({ example: ['Bachelor'], description: 'List of past degrees' })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  pastDegrees?: string[] | null;
-
-  @ApiPropertyOptional({ example: ['JavaScript', 'Python'], description: 'List of technical skills' })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  skills?: string[] | null;
-
-  @ApiPropertyOptional({
-    example: FieldOfStudy.COMPUTER_SCIENCE,
-    enum: FieldOfStudy,
-    description: 'Main field of study'
-  })  @IsOptional()
-  @IsEnum(FieldOfStudy)
-  fieldOfStudy?: FieldOfStudy | null;
-
-  @ApiPropertyOptional({ example: 'https://cv.example.com/jean-dupont.pdf', description: 'URL to the CV' })
-  @IsOptional()
-  @IsUrl()
-  cvUrl?: string | null;
-
-  @ApiPropertyOptional({ example: '+33600000000', description: 'Contact phone number' })
+  @ApiPropertyOptional({ example: 'Étudiant en informatique passionné par le backend.' })
   @IsOptional()
   @IsString()
-  contactPhoneNumber?: string | null;
+  biography?: string | null;
 
-  @ApiPropertyOptional({ example: 'jean.dupont@example.com', description: 'Contact email address' })
+  @ApiPropertyOptional({ example: '2002-05-14' })
+  @IsOptional()
+  @IsDateString()
+  dateOfBirth?: string | null;
+
+  @ApiPropertyOptional({ example: 'Marseille' })
+  @IsOptional()
+  @IsString()
+  city?: string | null;
+
+  @ApiPropertyOptional({ example: 'France' })
+  @IsOptional()
+  @IsString()
+  country?: string | null;
+
+  @ApiPropertyOptional({ example: '+33600000000' })
+  @IsOptional()
+  @IsString()
+  contactPhone?: string | null;
+
+  @ApiPropertyOptional({ example: 'jean.dupont@example.com' })
   @IsOptional()
   @IsEmail()
   contactEmail?: string | null;
-}
 
-export class UpdateStudentProfileDto {
-  @ApiPropertyOptional({ example: 'Jean', description: 'Student first name' })
+  @ApiPropertyOptional({ example: 'Aix-Marseille Université' })
   @IsOptional()
-  @Length(1, 50)
-  @Matches(/^\p{L}+(?:[ '\-]\p{L}+)*$/u)
-  firstName?: string;
+  @IsString()
+  schoolName?: string | null;
 
-  @ApiPropertyOptional({ example: 'Dupont', description: 'Student last name' })
+  @ApiPropertyOptional({ example: 'Master Informatique' })
   @IsOptional()
-  @Length(1, 50)
-  @Matches(/^\p{L}+(?:[ '\-]\p{L}+)*$/u)
-  lastName?: string;
-
-  @ApiPropertyOptional({ example: 'Sorbonne University', description: 'Name of the school' })
-  @IsOptional()
-  school?: string | null;
-
-  @ApiPropertyOptional({ example: 'Computer Science', description: 'Name of the degree' })
-  @IsOptional()
+  @IsString()
   degreeName?: string | null;
 
-  @ApiPropertyOptional({ example: 2022, description: 'Start year of studies' })
+  @ApiPropertyOptional({ enum: FieldOfStudy })
+  @IsOptional()
+  @IsEnum(FieldOfStudy)
+  fieldOfStudy?: FieldOfStudy | null;
+
+  @ApiPropertyOptional({ example: 2022 })
   @IsOptional()
   @IsNumber()
   startYear?: number | null;
 
-  @ApiPropertyOptional({ example: 2025, description: 'Expected end year' })
+  @ApiPropertyOptional({ example: 2025 })
   @IsOptional()
   @IsNumber()
-  endYear?: number | null;
+  graduationYear?: number | null;
 
-  @ApiPropertyOptional({ example: StudyLevel.BAC_PLUS_5, enum: StudyLevel, description: 'Current study level' })
+  @ApiPropertyOptional({ enum: StudyLevel })
   @IsOptional()
   @IsEnum(StudyLevel)
   currentLevel?: StudyLevel | null;
 
-  @ApiPropertyOptional({ example: StudyLevel.DOCTORATE, enum: StudyLevel, description: 'Target study level' })
+  @ApiPropertyOptional({ enum: StudyLevel })
   @IsOptional()
   @IsEnum(StudyLevel)
   targetLevel?: StudyLevel | null;
 
-  @ApiPropertyOptional({ example: ['Bachelor in IT - 2023'], description: 'List of past degrees' })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  pastDegrees?: string[] | null;
-
-  @ApiPropertyOptional({ example: ['JavaScript', 'Python'], description: 'List of technical skills' })
+  @ApiPropertyOptional({ example: ['JavaScript', 'NestJS'] })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   skills?: string[] | null;
 
-  @ApiPropertyOptional({
-    example: FieldOfStudy.COMPUTER_SCIENCE,
-    enum: FieldOfStudy,
-    description: 'Main field of study'
-  })  @IsOptional()
-  @IsEnum(FieldOfStudy)
-  fieldOfStudy?: FieldOfStudy | null;
+  @ApiPropertyOptional({ example: ['French', 'English'] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  languages?: string[] | null;
 
-  @ApiPropertyOptional({ example: 'https://cv.example.com/jean-dupont.pdf', description: 'URL to the CV' })
+  @ApiPropertyOptional({ example: 'https://cdn.example.com/cv.pdf' })
   @IsOptional()
   @IsUrl()
   cvUrl?: string | null;
+
+  @ApiPropertyOptional({ example: 'https://portfolio.example.com' })
+  @IsOptional()
+  @IsUrl()
+  portfolioUrl?: string | null;
+
+  @ApiPropertyOptional({ example: 'https://linkedin.com/in/jeandupont' })
+  @IsOptional()
+  @IsUrl()
+  linkedinUrl?: string | null;
+
+  @ApiPropertyOptional({ example: 'https://github.com/jeandupont' })
+  @IsOptional()
+  @IsUrl()
+  githubUrl?: string | null;
+
+  @ApiPropertyOptional({ enum: ContractType, isArray: true })
+  @IsOptional()
+  @IsArray()
+  @IsEnum(ContractType, { each: true })
+  openTo?: ContractType[] | null;
+
+  @ApiPropertyOptional({ example: ['Marseille', 'Paris'] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  preferredLocations?: string[] | null;
+
+  @ApiPropertyOptional({ example: '2025-09-01' })
+  @IsOptional()
+  @IsDateString()
+  availableOn?: string | null;
 
   @ApiPropertyOptional({ example: true, description: 'Whether the profile is visible to others' })
   @IsOptional()
@@ -153,13 +151,4 @@ export class UpdateStudentProfileDto {
   @IsOptional()
   @IsBoolean()
   showLastName?: boolean;
-
-  @ApiPropertyOptional({ example: '+33600000000', description: 'Contact phone number' })
-  @IsOptional()
-  contactPhoneNumber?: string | null;
-
-  @ApiPropertyOptional({ example: 'jean.dupont@example.com', description: 'Contact email address' })
-  @IsOptional()
-  @IsEmail()
-  contactEmail?: string | null;
 }

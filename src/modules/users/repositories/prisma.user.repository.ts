@@ -16,9 +16,9 @@ export class PrismaUserRepository {
       return User.fromObject(record);
     }
     
-    async findBySupabaseId(supabaseUserId: string): Promise<User|null> {
+    async findBySupabaseId(externalUserId: string): Promise<User|null> {
         const user:PrismaUser|null = await this.ctx.db.user.findUnique({
-            where: {supabaseUserId}
+            where: {externalUserId}
         })
 
         if (!user) return null;
@@ -29,7 +29,7 @@ export class PrismaUserRepository {
     async create(userData: User): Promise<User> {
         const user:PrismaUser = await this.ctx.db.user.create({
             data: {
-                supabaseUserId: userData.supabaseUserId, 
+                externalUserId: userData.externalUserId, 
                 email: userData.email,
                 role: userData.role
             }
