@@ -24,8 +24,9 @@ model User {
 }
 
 model StudentProfile {
-  // id                 Int           @id @default(autoincrement())
-  userId             Int           @id @unique
+  userId             Int      @id @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime? @updatedAt
 
   // Informations personnelles
   firstName          String
@@ -34,10 +35,6 @@ model StudentProfile {
   dateOfBirth        DateTime?
   city               String?
   country            String? @default("France")
-
-  // Contact
-  contactPhone       String?
-  contactEmail       String?
 
   // Situation scolaire actuelle
   schoolName         String?
@@ -52,12 +49,6 @@ model StudentProfile {
   skills             String[]
   languages          String[]
 
-  // CV et réseaux sociaux
-  cvUrl              String?
-  portfolioUrl String? @map("portfolio_url")
-  linkedinUrl  String? @map("linkedin_url")
-  githubUrl    String? @map("github_url")
-
   // Recherche d'emploi
   openTo             ContractType[]
   preferredLocations String[]
@@ -67,6 +58,17 @@ model StudentProfile {
   isVisible          Boolean       @default(false)
   showLastName       Boolean       @default(false)
 
+  // CV et réseaux sociaux
+  cvUrl              String?
+  portfolioUrl String? 
+  linkedinUrl  String? 
+  githubUrl    String?
+
+  // Contact
+  contactPhone       String?
+  contactEmail       String?
+
+  // Relations étrangères
   user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   applications OfferApplication[]
   savedOffers StudentSavedOffer[]
@@ -86,16 +88,47 @@ model StudentSavedOffer {
   @@index([offerId])
 }
 
-
 model CompanyProfile {
-  userId             Int       @id @unique
+    // id                 Int           @id @default(autoincrement())
+
+  userId             Int           @id @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime? @updatedAt
+
+  // Informations légales
   legalName          String
+  siret             String?
+  description       String?
+  slogan            String?
   industry           Industry?
-  description        String?   @db.Text
-  siret              String?
-  isVerified         Boolean   @default(false)
-  contactPhoneNumber String?
+  size              CompanySize?
+  employeeCount   Int?
+
+  // Adresse
+  address     String?
+  city        String?
+  postalCode  String?
+  country String? @default("France")
+
+  // Histoire
+  foundedIn         DateTime?
+  values   String[]
+  benefits String[]
+
+  // Images et couleurs
+  logoUrl String?
+  coverUrl String?
+  primaryColor  String? @default("#EE7527")
+
+  // Réseaux sociaux
+  websiteUrl String? 
+  linkedinUrl  String? 
+
+  // Contact
+  contactPhone       String?
   contactEmail       String?
+
+  // Relations étrangères
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   offers             Offer[]
 
@@ -110,21 +143,44 @@ enum OfferStatus {
 
 model Offer {
   id           Int          @id @default(autoincrement())
+  companyId   Int           
+  status       OfferStatus  @default(DRAFT)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime?       @updatedAt
+  publishedAt DateTime?
+
+  // Détails
   title        String
   description  String
-  location     String
-  salary       Int?
-  status       OfferStatus  @default(DRAFT)
-  fieldOfStudy FieldOfStudy
+  shortDescription String? 
+  startDate DateTime?
+  applicationDeadline DateTime?
+  fieldOfStudy FieldOfStudy?
 
-  // Relations
-  companyId Int
+  // Légal
+  contractType ContractType[]
+  duration_min Int?
+  duration_min_unit DurationUnit?
+  duration_max Int?
+  duration_max_unit DurationUnit?
+  salaryMin   Int?
+  salaryMax   Int? 
+  appliesMinimumWage Boolean @default(false)
+
+  // Location and remote work
+  city String?
+  country String? @default("France")
+  remoteType RemoteType?
+
+  // Visibilité
+  isFeatured Boolean @default(false)
+  viewCount Int @default(0)
+
+  // Relations étrangères
   company   CompanyProfile @relation(fields: [companyId], references: [userId], onDelete: Cascade)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-
   applications OfferApplication[]
   savedBy       StudentSavedOffer[]
+
   @@map("offers")
 }
 
@@ -205,4 +261,23 @@ enum StudyLevel {
 enum ContractType {
   INTERNSHIP     // Stage
   APPRENTICESHIP  // Alternance
+}
+
+enum CompanySize {
+  TPE   // 0-10
+  PME   // 10-250
+  ETI   // 250-5000
+  GE    // +5000
+}
+
+enum DurationUnit {
+  DAYS 
+  MONTHS
+  YEARS
+}
+
+enum RemoteType {
+  ON_SITE
+  HYBRID
+  FULL_REMOTE
 }

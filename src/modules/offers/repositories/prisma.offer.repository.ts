@@ -14,8 +14,6 @@ export class PrismaOfferRepository {
         title: data.title,
         description: data.description,
         companyId: data.companyId,
-        location: data.location,
-        salary: data.salary,
         status: data.status,
         fieldOfStudy: data.fieldOfStudy,
       }
@@ -61,15 +59,15 @@ export class PrismaOfferRepository {
     await this.ctx.db.offer.delete({where:{id:offerId}});
   }
 
-  async getVisibleOffers(): Promise<Offer[]> {
-    const offersData = await this.ctx.db.offer.findMany({
-      where: {
-        company: {
-          isVerified: true
-        }
-      }
-    });
+  // async getVisibleOffers(): Promise<Offer[]> {
+  //   const offersData = await this.ctx.db.offer.findMany({
+  //     where: {
+  //       company: {
+  //         isVerified: true
+  //       }
+  //     }
+  //   });
 
-    return offersData.map(data => Offer.fromObject(data));
-  }
+  //   return offersData.map(data => Offer.fromObject(data));
+  // }
 }

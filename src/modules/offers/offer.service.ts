@@ -26,10 +26,10 @@ export class OfferService {
     const companyProfile = await this.companyProfileService.getCompanyProfileOrNull(companyId);
     if (!companyProfile) throw new NotFoundException()
 
-    if (!requestingUser?.isSelfOrAdmin(companyId)) {
-      if (!companyProfile.isVerified) throw new NotFoundException()
-      return this.offerRepository.getOffersByCompanyIdAndStatus(companyId, OfferStatus.PUBLISHED)
-    }
+    // if (!requestingUser?.isSelfOrAdmin(companyId)) {
+    //   if (!companyProfile.isVerified) throw new NotFoundException()
+    //   return this.offerRepository.getOffersByCompanyIdAndStatus(companyId, OfferStatus.PUBLISHED)
+    // }
 
     return this.offerRepository.getOffersByCompanyId(companyId);
   }
@@ -40,7 +40,7 @@ export class OfferService {
 
     const companyProfile = await this.companyProfileService.getCompanyProfileOrNull(offer.companyId);
     // Entreprise non-vérifiée ou offre en brouillon
-    if ((companyProfile && !companyProfile.isVerified) || offer.isDraft()) {
+    if (offer.isDraft()) {
       // Offre seulement visible à soi-même ou aux admins
       if (!requestingUser || !requestingUser.isSelfOrAdmin(offer.companyId))
         throw new ForbiddenException();
@@ -105,7 +105,7 @@ export class OfferService {
     if (!offer) throw new BadRequestException("Offer doesn't exist");
 
     const company:CompanyProfile = await this.companyProfileService.getCompanyProfile(offer.companyId);
-    if (!company || !company.isVerified) throw new NotFoundException();
+    if (!company) throw new NotFoundException();
 
     if (!offer.isApplicable())
       throw new BadRequestException("This offer cannot be applied to.");
@@ -114,6 +114,6 @@ export class OfferService {
   }
 
   async getVisibleOffers(requestingUser:User):Promise<Offer[]> {
-    return this.offerRepository.getVisibleOffers();
+    throw new NotImplementedException()
   }
 }

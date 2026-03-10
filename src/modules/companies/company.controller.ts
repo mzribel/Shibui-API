@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { Public } from '@common/decorators/roles.decorator';
 import { CurrentUser } from '@common/decorators/user.decorator';
 import { User } from '@modules/users/models/user';
-import { CreateCompanyProfileDto, UpdateCompanyProfileDto } from '@modules/companies/dto/company-profile.dto';
+import * as companyProfileDto from '@modules/companies/dto/company-profile.dto';
 import { CompanyProfileService } from '@modules/companies/company.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller()
 export class CompanyController {
@@ -16,7 +17,16 @@ export class CompanyController {
   }
 
   @Patch("companies/:id/profile")
-  updateCompanyProfile(@Param("id") userId: number, @Body() dto:UpdateCompanyProfileDto, @CurrentUser() requestingUser:User) {
-    return this.companyService.updateCompanyProfile(userId, dto, requestingUser);
+  @UseInterceptors(
+  FileFieldsInterceptor([
+    { name: 'logo', maxCount: 1 },
+    { name: 'cover', maxCount: 1 },
+  ]),
+)
+  updateCompanyProfile(@Param("id") userId: number, 
+    @Body() dto:companyProfileDto.UpdateCompanyProfileDto, 
+    @UploadedFiles() files: companyProfileDto.CompanyProfileFileDto,
+    @CurrentUser() requestingUser:User) {
+    return this.companyService.updateCompanyProfile(userId, dto, files, requestingUser);
   }
 }

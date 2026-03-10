@@ -52,7 +52,7 @@ export class TestController {
     }
 
     const userId = user.id;
-    const result = await this.fileService.uploadCVforUser(file);
+    const result = await this.fileService.uploadCV(file);
 
     return {
       message: "Upload réussi",

@@ -88,7 +88,6 @@ model CompanyProfile {
 
   values   String[]
   benefits String[]
-  history  String?
 
   address    String?
   city       String?

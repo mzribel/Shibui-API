@@ -6,7 +6,7 @@ import { validateFileSize, validateMimeType } from '@common/utils/format.validat
 export class FileService {
   constructor(private readonly storageService:IStorageProvider) {}
 
-  async uploadCVforUser(file: Express.Multer.File, userId:number=1): Promise<{ url: string; key: string }> {
+  async uploadCV(file: Express.Multer.File, userId:number=1): Promise<{ url: string; key: string }> {
     const path:string = `users/cv-user-${userId}/`;
 
     validateMimeType(file, ['application/pdf']);
@@ -14,5 +14,21 @@ export class FileService {
 
     return this.storageService.upload(file, path, { container:"cv" })
   }
-  // async uploadCVforApplication(file: Express.Multer.File, applicationId:number): Promise<{ url: string; key: string }> {}
+
+  async uploadImage(file: Express.Multer.File, userId:number=1, type:"avatar"|"cover"|"logo"="avatar") {
+    const path = type != "avatar" ? 
+      `users/${type}-${userId}/` : 
+      `company/${type}-${userId}/`;
+
+    validateMimeType(file, ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']);
+
+    return this.storageService.upload(file, path, { container:"images" })
+  }
+
+  async getCV(path:string) {
+    return this.storageService.getSignedUrl(path, undefined, { container:"cv"})
+  }
+  async getImage(path:string) {
+    return this.storageService.getPublicUrl(path, { container:"images"})
+  }
 }
